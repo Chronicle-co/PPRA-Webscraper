@@ -164,8 +164,16 @@ jobs:
 
 ---
 
+
+
+
 ## **Run Automatically via GitHub Actions**
 
 1. Add Gmail API secrets.
 2. Push your code to GitHub.
 3. Workflow runs **hourly** (or manually via `workflow_dispatch`).
+
+
+NOTE: Change github in github/workflows/ to .github to make yml files appear in Actions and run automatically.
+      Also remember to add `GMAIL_SENDER`, `GMAIL_RECIPIENT` ,`CREDENTIALS_JSON` ,`TOKEN_JSON` in secrets in Settings or code will not work.
+      Also make repo private if in use (added `CREDENTIALS_JSON` and `TOKEN_JSON` ) as it might be a security risk.
