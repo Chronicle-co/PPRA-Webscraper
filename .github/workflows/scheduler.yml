@@ -1,0 +1,46 @@
+name: Run PPRA Scraper
+
+on:
+  schedule:
+    - cron: "0 * * * *" # runs every hour
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  run-scraper:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: pip install -r scraper/requirements.txt
+
+      - name: Set up Chrome
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Clean old downloads
+        run: |
+          rm -rf ppra_pdfs
+          mkdir -p ppra_pdfs
+          find . -name "*.xlsx" -type f -delete
+
+      - name: Decode Gmail Credentials
+        run: |
+          echo "${{ secrets.CREDENTIALS_JSON }}" | base64 --decode > scraper/credentials.json
+          echo "${{ secrets.TOKEN_JSON }}" | base64 --decode > scraper/token.json
+
+      - name: Run Scraper
+        env:
+          GMAIL_SENDER: ${{ secrets.GMAIL_SENDER }}
+          GMAIL_RECIPIENT: ${{ secrets.GMAIL_RECIPIENT }}
+        run: python3 scraper/main.py
+
